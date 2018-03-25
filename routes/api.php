@@ -18,16 +18,16 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 // List all cards list
-Route::get('list', 'CardsListController@index');
+Route::get('lists', 'CardsListController@index');
 
 // List single card list
-Route::get('list', 'CardsListController@show');
+Route::get('list/{hash}', 'CardsListController@show');
 
 // Create new cards list
-Route::post('list', 'CardsListController@create');
+Route::post('list', 'CardsListController@store');
 
 // Update cards list
 Route::put('list', 'CardsListController@update');
 
 // Delete cards list
-Route::delete('list', 'CardsListController@destroy');
+Route::delete('list/{id}', 'CardsListController@destroy');

@@ -16,6 +16,7 @@ class CreateCardsListsTable extends Migration
         Schema::create('cards_lists', function (Blueprint $table) {
             $table->increments('id');
             $table->string('hash');
+            $table->smallInteger('type');
             $table->json('cards');
             $table->timestamps();
         });

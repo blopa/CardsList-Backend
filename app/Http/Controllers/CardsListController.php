@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\CardsList;
+//use App\Http\Request;
+use App\Http\Resources\CardsList as CardsListResource;
 use Illuminate\Http\Request;
 
 class CardsListController extends Controller
@@ -14,17 +16,8 @@ class CardsListController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $cardsList = CardsList::paginate(15);
+        return CardsListResource::collection($cardsList);
     }
 
     /**
@@ -35,7 +28,15 @@ class CardsListController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $cardsList = new CardsList;
+        $hash = substr(md5(uniqid(str_shuffle((string)microtime().rand()), true)), 0, 30);
+        $cardsList->hash = $hash;
+        $cardsList->type = $request->input('type');
+        $cardsList->cards = $request->input('cards');
+
+        if ($cardsList->save()) {
+            return new CardsListResource($cardsList);
+        }
     }
 
     /**
@@ -44,20 +45,10 @@ class CardsListController extends Controller
      * @param  \App\CardsList  $cardsList
      * @return \Illuminate\Http\Response
      */
-    public function show(CardsList $cardsList)
+    public function show($hash)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\CardsList  $cardsList
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(CardsList $cardsList)
-    {
-        //
+        $cardsList = CardsList::where('hash', $hash)->first();
+        return new CardsListResource($cardsList);
     }
 
     /**
@@ -69,7 +60,14 @@ class CardsListController extends Controller
      */
     public function update(Request $request, CardsList $cardsList)
     {
-        //
+        $hash = substr(md5(uniqid(str_shuffle((string)microtime().rand()), true)), 0, 30);
+        $cardsList->hash = $hash;
+        $cardsList->type = $request->input('type');
+        $cardsList->cards = $request->input('cards');
+
+        if ($cardsList->save()) {
+            return new CardsListResource($cardsList);
+        }
     }
 
     /**
@@ -78,8 +76,12 @@ class CardsListController extends Controller
      * @param  \App\CardsList  $cardsList
      * @return \Illuminate\Http\Response
      */
-    public function destroy(CardsList $cardsList)
+    public function destroy($id)
     {
-        //
+        $cardsList = CardsList::findOrFail($id);
+
+        if ($cardsList->delete()) {
+            return new CardsListResource($cardsList);
+        }
     }
 }
